@@ -33,10 +33,11 @@ UpgradeLog*
 packages/*
 /_NCrunch_TechTalk.SpecFlow_VS2013/StoredText
 !lib/**
-/Tools/app.config
-/Tools/plugincompability.config
+TechTalk.SpecFlow.Tools/app.config
+TechTalk.SpecFlow.Tools/plugincompability.config
 TechTalk.SpecFlow.sln.GhostDoc.xml
 *.lock.json
 .vs/*
 .vscode/*
 Features.Generated/
+GitExtensions.settings.backup

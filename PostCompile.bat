@@ -2,7 +2,7 @@ echo %1
 
 set targetDir=%1
 
-set copyTargetDir=%targetDir%\bin\Debug\net452\win7-x64
+set copyTargetDir=%targetDir%\bin\Debug\net452
 
 cd ..\..\
 mkdir "%copyTargetDir%\SpecFlow\Tools"
@@ -47,15 +47,16 @@ xcopy ".\lib\Microsoft F#\*.*" "%copyTargetDir%\FSharp\" /s /y
 xcopy "%USERPROFILE%\.nuget\packages\NUnit\2.6.4\*" "%copyTargetDir%\NUnit\" /s /y
 xcopy "%USERPROFILE%\.nuget\packages\NUnit.Runners\2.6.4\*" "%copyTargetDir%\NUnit.Runners\" /s /y
 
-xcopy "%USERPROFILE%\.nuget\packages\NUnit\3.4.0\*" "%copyTargetDir%\NUnit3\" /s /y
-xcopy "%USERPROFILE%\.nuget\packages\NUnit.ConsoleRunner\3.4.0\*" "%copyTargetDir%\NUnit3-Runner\" /s /y
-xcopy "%USERPROFILE%\.nuget\packages\NUnit.Extension.NUnitProjectLoader\3.4.0\*" "%copyTargetDir%\NUnit3-Runner\" /s /y
-xcopy "%USERPROFILE%\.nuget\packages\NUnit.Extension.VSProjectLoader\3.4.0\*" "%copyTargetDir%\NUnit3-Runner\" /s /y
-xcopy "%USERPROFILE%\.nuget\packages\NUnit.Extension.NUnitV2ResultWriter\3.4.0\*" "%copyTargetDir%\NUnit3-Runner\" /s /y
-xcopy "%USERPROFILE%\.nuget\packages\NUnit.Extension.NUnitV2Driver\3.4.0\*" "%copyTargetDir%\NUnit3-Runner\" /s /y
-xcopy "%USERPROFILE%\.nuget\packages\NUnit.Extension.TeamCityEventListener\3.4.0\*" "%copyTargetDir%\NUnit3-Runner\" /s /y
+xcopy "%USERPROFILE%\.nuget\packages\NUnit.Extension.NUnitProjectLoader\3.6.0\*" "%copyTargetDir%\NUnit3-Runner\" /s /y
+xcopy "%USERPROFILE%\.nuget\packages\NUnit.Extension.VSProjectLoader\3.6.0\*" "%copyTargetDir%\NUnit3-Runner\" /s /y
+xcopy "%USERPROFILE%\.nuget\packages\NUnit.Extension.NUnitV2ResultWriter\3.7.0\*" "%copyTargetDir%\NUnit3-Runner\" /s /y
+xcopy "%USERPROFILE%\.nuget\packages\NUnit.Extension.NUnitV2Driver\3.7.0\*" "%copyTargetDir%\NUnit3-Runner\" /s /y
+rem xcopy "%USERPROFILE%\.nuget\packages\NUnit.Extension.TeamCityEventListener\1.0.2\*" "%copyTargetDir%\NUnit3-Runner\" /s /y
+xcopy "%USERPROFILE%\.nuget\packages\NUnit.ConsoleRunner\3.7.0\*" "%copyTargetDir%\NUnit3-Runner\" /s /y
+xcopy "%USERPROFILE%\.nuget\packages\NUnit\3.8.1\*" "%copyTargetDir%\NUnit3\" /s /y
 
-echo nunit-v2-result-writer.dll >> "%copyTargetDir%\NUnit3-Runner\tools\.addins"
+
+echo nunit-v2-result-writer.dll > "%copyTargetDir%\NUnit3-Runner\tools\.addins"
 echo vs-project-loader.dll >> "%copyTargetDir%\NUnit3-Runner\tools\.addins"
 echo nunit.v2.driver.dll >> "%copyTargetDir%\NUnit3-Runner\tools\.addins"
 echo nunit-project-loader.dll >> "%copyTargetDir%\NUnit3-Runner\tools\.addins"
@@ -66,6 +67,6 @@ xcopy "%USERPROFILE%\.nuget\packages\xunit.extensions\1.9.2\*.*" "%copyTargetDir
 
 xcopy "%USERPROFILE%\.nuget\packages\xunit.runner.console\2.0.0\*.*" "%copyTargetDir%\xunit.runner.console\" /s /y
 
-xcopy "%USERPROFILE%\.nuget\packages\SpecFlow\1.9.0\lib\net35\*.*" "%copyTargetDir%\" /s /y
+rem xcopy "%USERPROFILE%\.nuget\packages\SpecFlow\1.9.0\lib\net35\*.*" "%copyTargetDir%\" /s /y
 
 xcopy ".\lib\mbunit.3.3.442.0\*.*" "%copyTargetDir%\mbUnit3\" /s /y
