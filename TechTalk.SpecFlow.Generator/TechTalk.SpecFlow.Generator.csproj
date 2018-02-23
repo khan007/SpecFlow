@@ -36,20 +36,19 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Gherkin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=86496cfa5b4a5851, processorArchitecture=MSIL">
-      <HintPath>..\packages\Gherkin.4.0.0\lib\net45\Gherkin.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Gherkin, Version=5.0.0.0, Culture=neutral, PublicKeyToken=86496cfa5b4a5851, processorArchitecture=MSIL">
+      <HintPath>..\packages\Gherkin.5.0.0\lib\net45\Gherkin.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -67,6 +66,7 @@
     <Compile Include="ITestUpToDateChecker.cs" />
     <Compile Include="Plugins\GeneratorPluginEventArgs.cs" />
     <Compile Include="Plugins\GeneratorPluginEvents.cs" />
+    <Compile Include="Plugins\GeneratorPluginLoader.cs" />
     <Compile Include="Plugins\GeneratorPluginParameters.cs" />
     <Compile Include="Plugins\IGeneratorPlugin.cs" />
     <Compile Include="Plugins\IGeneratorPluginLoader.cs" />
@@ -117,6 +117,7 @@
     <Compile Include="TestGenerator.cs" />
     <Compile Include="TestGeneratorFactory.cs" />
     <Compile Include="UnitTestConverter\IFeatureGeneratorProvider.cs" />
+    <Compile Include="UnitTestProvider\MsTestV2GeneratorProvider.cs" />
     <Compile Include="UnitTestProvider\NUnit3TestGeneratorProvider.cs" />
     <Compile Include="UnitTestProvider\UnitTestGeneratorProviders.cs" />
     <Compile Include="UnitTestProvider\MbUnit3TestGeneratorProvider.cs" />
@@ -128,6 +129,7 @@
     <Compile Include="UnitTestProvider\IUnitTestGeneratorProvider.cs" />
     <Compile Include="UnitTestProvider\MsTestGeneratorProvider.cs" />
     <Compile Include="UnitTestProvider\NUnitTestGeneratorProvider.cs" />
+    <Compile Include="Helpers\PathHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TechTalk.SpecFlow.Parser\TechTalk.SpecFlow.Parser.csproj">
