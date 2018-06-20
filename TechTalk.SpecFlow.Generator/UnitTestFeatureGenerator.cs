@@ -366,8 +366,6 @@ namespace TechTalk.SpecFlow.Generator
 
             var scenatioOutlineTestMethod = CreateScenatioOutlineTestMethod(generationContext, scenarioOutline, paramToIdentifier);
             var exampleTagsParam = new CodeVariableReferenceExpression(SCENARIO_OUTLINE_EXAMPLE_TAGS_PARAMETER);
-            GenerateTestBody(generationContext, scenarioOutline, scenatioOutlineTestMethod, exampleTagsParam, paramToIdentifier);
-
             if (generationContext.GenerateRowTests)
             {
                 GenerateScenarioOutlineExamplesAsRowTests(generationContext, scenarioOutline, scenatioOutlineTestMethod);
@@ -376,6 +374,7 @@ namespace TechTalk.SpecFlow.Generator
             {
                 GenerateScenarioOutlineExamplesAsIndividualMethods(scenarioOutline, generationContext, scenatioOutlineTestMethod, paramToIdentifier);
             }
+            GenerateTestBody(generationContext, scenarioOutline, scenatioOutlineTestMethod, exampleTagsParam, paramToIdentifier);
         }
 
         private void GenerateScenarioOutlineExamplesAsIndividualMethods(ScenarioOutline scenarioOutline, TestClassGenerationContext generationContext, CodeMemberMethod scenatioOutlineTestMethod, ParameterSubstitution paramToIdentifier)
@@ -540,6 +539,7 @@ namespace TechTalk.SpecFlow.Generator
                 new CodeVariableDeclarationStatement(typeof(ScenarioInfo), "scenarioInfo",
                     new CodeObjectCreateExpression(typeof(ScenarioInfo),
                         new CodePrimitiveExpression(scenario.Name),
+                        new CodePrimitiveExpression(scenario.Description),
                         tagsExpression)));
 
             AddLineDirective(testMethod.Statements, scenario);

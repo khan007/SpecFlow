@@ -4,6 +4,7 @@ using TechTalk.SpecFlow.Generator.Configuration;
 using TechTalk.SpecFlow.Generator.Interfaces;
 using TechTalk.SpecFlow.Generator.Plugins;
 using TechTalk.SpecFlow.Generator.UnitTestConverter;
+using TechTalk.SpecFlow.Parser;
 using TechTalk.SpecFlow.Tracing;
 using TechTalk.SpecFlow.Utils;
 
@@ -15,15 +16,17 @@ namespace TechTalk.SpecFlow.Generator
 
         public virtual void RegisterDefaults(ObjectContainer container)
         {
+            container.RegisterTypeAs<FileSystem, IFileSystem>();
+
             container.RegisterTypeAs<GeneratorConfigurationProvider, IGeneratorConfigurationProvider>();
             container.RegisterTypeAs<InProcGeneratorInfoProvider, IGeneratorInfoProvider>();
             container.RegisterTypeAs<TestGenerator, ITestGenerator>();
             container.RegisterTypeAs<TestHeaderWriter, ITestHeaderWriter>();
             container.RegisterTypeAs<TestUpToDateChecker, ITestUpToDateChecker>();
 
+            container.RegisterTypeAs<GeneratorPluginLocator, IGeneratorPluginLocator>();
             container.RegisterTypeAs<GeneratorPluginLoader, IGeneratorPluginLoader>();
             container.RegisterTypeAs<DefaultListener, ITraceListener>();
-
 
             container.RegisterTypeAs<UnitTestFeatureGenerator, UnitTestFeatureGenerator>();
             container.RegisterTypeAs<FeatureGeneratorRegistry, IFeatureGeneratorRegistry>();
@@ -39,6 +42,8 @@ namespace TechTalk.SpecFlow.Generator
             container.RegisterInstanceAs(GenerationTargetLanguage.CreateCodeDomHelper(GenerationTargetLanguage.VB), GenerationTargetLanguage.VB, dispose: true);
 
             container.RegisterTypeAs<ConfigurationLoader, IConfigurationLoader>();
+
+            container.RegisterTypeAs<SpecFlowGherkinParserFactory, IGherkinParserFactory>();
 
             RegisterUnitTestGeneratorProviders(container);
         }
