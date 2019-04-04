@@ -4,8 +4,9 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using BoDi;
+using FluentAssertions;
 using Moq;
-using NUnit.Framework;
+using Xunit;
 using TechTalk.SpecFlow.Bindings;
 using TechTalk.SpecFlow.Bindings.Reflection;
 using TechTalk.SpecFlow.Configuration;
@@ -63,7 +64,6 @@ namespace TechTalk.SpecFlow.RuntimeTests
         }
     }
 
-    [TestFixture]
     public class StepTransformationTests
     {
         private readonly Mock<IBindingRegistry> bindingRegistryStub = new Mock<IBindingRegistry>();
@@ -71,8 +71,7 @@ namespace TechTalk.SpecFlow.RuntimeTests
         private readonly Mock<IBindingInvoker> methodBindingInvokerStub = new Mock<IBindingInvoker>();
         private readonly List<IStepArgumentTransformationBinding> stepTransformations = new List<IStepArgumentTransformationBinding>();
 
-        [SetUp]
-        public void SetUp()
+        public StepTransformationTests()
         {
             // ScenarioContext is needed, because the [Binding]-instances live there
             var scenarioContext = new ScenarioContext(new ObjectContainer(), null, new TestObjectResolver());
@@ -91,24 +90,24 @@ namespace TechTalk.SpecFlow.RuntimeTests
             return new StepArgumentTransformationBinding(regexString, new RuntimeBindingMethod(transformMethod));
         }
 
-        [Test]
+        [Fact]
         public void UserConverterShouldConvertStringToUser()
         {
             UserCreator stepTransformationInstance = new UserCreator();
             var transformMethod = stepTransformationInstance.GetType().GetMethod("Create");
             var stepTransformationBinding = CreateStepTransformationBinding(@"user (\w+)", transformMethod);
 
-            Assert.True(stepTransformationBinding.Regex.IsMatch("user xyz"));
+            stepTransformationBinding.Regex.IsMatch("user xyz").Should().BeTrue();
 
-            var invoker = new BindingInvoker(ConfigurationLoader.GetDefault(), new Mock<IErrorProvider>().Object);
+            var invoker = new BindingInvoker(ConfigurationLoader.GetDefault(), new Mock<IErrorProvider>().Object, new SynchronousBindingDelegateInvoker());
             TimeSpan duration;
             var result = invoker.InvokeBinding(stepTransformationBinding, contextManagerStub.Object, new object[] { "xyz" }, new Mock<ITestTracer>().Object, out duration);
             Assert.NotNull(result);
-            Assert.That(result.GetType(), Is.EqualTo(typeof(User)));
-            Assert.That(((User)result).Name, Is.EqualTo("xyz"));
+            result.Should().BeOfType<User>();
+            ((User) result).Name.Should().Be("xyz");
         }
 
-        [Test]
+        [Fact]
         public void TypeToTypeConverterShouldConvertStringToStringUsingRegex()
         {
             TypeToTypeConverter stepTransformationInstance = new TypeToTypeConverter();
@@ -117,45 +116,46 @@ namespace TechTalk.SpecFlow.RuntimeTests
 
             Assert.True(stepTransformationBinding.Regex.IsMatch("string xyz"));
 
-            var invoker = new BindingInvoker(ConfigurationLoader.GetDefault(), new Mock<IErrorProvider>().Object);
+            var invoker = new BindingInvoker(ConfigurationLoader.GetDefault(), new Mock<IErrorProvider>().Object, new SynchronousBindingDelegateInvoker());
             TimeSpan duration;
             var result = invoker.InvokeBinding(stepTransformationBinding, contextManagerStub.Object, new object[] { "xyz" }, new Mock<ITestTracer>().Object, out duration);
             Assert.NotNull(result);
-            Assert.That(result.GetType(), Is.EqualTo(typeof(string)));
-            Assert.That(((string)result), Is.EqualTo("prefix xyz"));
+            result.GetType().Should().Be<string>();
+            result.Should().Be("prefix xyz");
         }
 
-        [Test]
+        [Fact]
         public void TypeToTypeConverterShouldConvertStringToString()
         {
             TypeToTypeConverter stepTransformationInstance = new TypeToTypeConverter();
             var transformMethod = stepTransformationInstance.GetType().GetMethod("StringToStringConvert");
             var stepTransformationBinding = CreateStepTransformationBinding(@"", transformMethod);
 
-            var invoker = new BindingInvoker(ConfigurationLoader.GetDefault(), new Mock<IErrorProvider>().Object);
+            var invoker = new BindingInvoker(ConfigurationLoader.GetDefault(), new Mock<IErrorProvider>().Object, new SynchronousBindingDelegateInvoker());
             TimeSpan duration;
             var result = invoker.InvokeBinding(stepTransformationBinding, contextManagerStub.Object, new object[] { "xyz" }, new Mock<ITestTracer>().Object, out duration);
             Assert.NotNull(result);
-            Assert.That(result.GetType(), Is.EqualTo(typeof(string)));
-            Assert.That(((string)result), Is.EqualTo("prefix xyz"));
+            result.GetType().Should().Be<string>();
+            result.Should().Be("prefix xyz");
         }
 
-        [Test]
+        [Fact]
         public void TypeToTypeConverterShouldConvertTableToTable()
         {
             TypeToTypeConverter stepTransformationInstance = new TypeToTypeConverter();
             var transformMethod = stepTransformationInstance.GetType().GetMethod("TableToTableConvert");
             var stepTransformationBinding = CreateStepTransformationBinding(@"", transformMethod);
 
-            var invoker = new BindingInvoker(ConfigurationLoader.GetDefault(), new Mock<IErrorProvider>().Object);
+            var invoker = new BindingInvoker(ConfigurationLoader.GetDefault(), new Mock<IErrorProvider>().Object, new SynchronousBindingDelegateInvoker());
             TimeSpan duration;
             var result = invoker.InvokeBinding(stepTransformationBinding, contextManagerStub.Object, new object[] { new Table("h1") }, new Mock<ITestTracer>().Object, out duration);
             Assert.NotNull(result);
-            Assert.That(result.GetType(), Is.EqualTo(typeof(Table)));
-            Assert.That(((Table)result).Header, Is.EqualTo(new string[] { "transformed column", "h1" }));
+
+            result.GetType().Should().Be<Table>();
+            ((Table)result).Header.Should().BeEquivalentTo(new string[] { "transformed column", "h1" });
         }
 
-        [Test]
+        [Fact]
         public void StepArgumentTypeConverterShouldUseUserConverterForConversion()
         {
             UserCreator stepTransformationInstance = new UserCreator();
@@ -170,7 +170,7 @@ namespace TechTalk.SpecFlow.RuntimeTests
             var stepArgumentTypeConverter = CreateStepArgumentTypeConverter();
 
             var result = stepArgumentTypeConverter.Convert("user xyz", typeof(User), new CultureInfo("en-US"));
-            Assert.That(result, Is.EqualTo(resultUser));
+            result.Should().Be(resultUser);
         }
 
         private StepArgumentTypeConverter CreateStepArgumentTypeConverter()
@@ -178,7 +178,7 @@ namespace TechTalk.SpecFlow.RuntimeTests
             return new StepArgumentTypeConverter(new Mock<ITestTracer>().Object, bindingRegistryStub.Object, contextManagerStub.Object, methodBindingInvokerStub.Object);
         }
 
-        [Test]
+        [Fact]
         public void ShouldUseStepArgumentTransformationToConvertTable()
         {
             var table = new Table("Name");
@@ -197,8 +197,9 @@ namespace TechTalk.SpecFlow.RuntimeTests
 
             var result = stepArgumentTypeConverter.Convert(table, typeof(IEnumerable<User>), new CultureInfo("en-US"));
 
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result, Is.EqualTo(resultUsers));
+            result.Should().NotBeNull();
+            result.Should().Be(resultUsers);
+
         }
     }
 

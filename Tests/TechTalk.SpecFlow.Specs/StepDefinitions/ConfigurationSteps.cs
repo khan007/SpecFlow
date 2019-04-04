@@ -1,29 +1,48 @@
-﻿using FluentAssertions;
-using TechTalk.SpecFlow.Specs.Drivers;
+﻿using System.Linq;
+using FluentAssertions;
+using TechTalk.SpecFlow.TestProjectGenerator;
+using TechTalk.SpecFlow.TestProjectGenerator.Driver;
+using TechTalk.SpecFlow.TestProjectGenerator.NewApi;
 
 namespace TechTalk.SpecFlow.Specs.StepDefinitions
 {
     [Binding]
-    class ConfigurationSteps
+    public class ConfigurationSteps
     {
-        private readonly TestExecutionResult _testExecutionResult;
+        private readonly VSTestExecutionDriver _vstestExecutionDriver;
+        private readonly ConfigurationDriver _configurationDriver;
+        private readonly TestRunConfiguration _testRunConfiguration;
 
-        public ConfigurationSteps(TestExecutionResult testExecutionResult)
+        public ConfigurationSteps(VSTestExecutionDriver vstestExecutionDriver, ConfigurationDriver configurationDriver, TestRunConfiguration testRunConfiguration)
         {
-            _testExecutionResult = testExecutionResult;
+            _vstestExecutionDriver = vstestExecutionDriver;
+            _configurationDriver = configurationDriver;
+            _testRunConfiguration = testRunConfiguration;
         }
 
         [Then(@"the app\.config is used for configuration")]
         public void ThenTheApp_ConfigIsUsedForConfiguration()
         {
-            _testExecutionResult.ExecutionLog.Should().Contain("Using app.config");
+            if (_testRunConfiguration.UnitTestProvider == TestProjectGenerator.UnitTestProvider.MSTest)
+            {
+                _vstestExecutionDriver.LastTestExecutionResult.TestResults.Where(tr => tr.StdOut.Contains("Using app.config")).Should().NotBeEmpty();
+            }
+            else
+            {
+                _vstestExecutionDriver.LastTestExecutionResult.Output.Should().Contain("Using app.config");
+            }
         }
 
         [Then(@"the specflow\.json is used for configuration")]
         public void ThenTheSpecflow_JsonIsUsedForConfiguration()
         {
-            _testExecutionResult.ExecutionLog.Should().Contain("Using specflow.json");
+            _vstestExecutionDriver.LastTestExecutionResult.Output.Should().Contain("Using specflow.json");
         }
 
+        [Given(@"the feature language is '(.*)'")]
+        public void GivenTheFeatureLanguageIs(string featureLanguage)
+        {
+            _configurationDriver.SetFeatureLanguage(featureLanguage);
+        }
     }
 }

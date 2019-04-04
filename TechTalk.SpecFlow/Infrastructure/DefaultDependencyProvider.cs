@@ -34,6 +34,7 @@ namespace TechTalk.SpecFlow.Infrastructure
             container.RegisterTypeAs<BindingFactory, IBindingFactory>();
             container.RegisterTypeAs<StepDefinitionRegexCalculator, IStepDefinitionRegexCalculator>();
             container.RegisterTypeAs<BindingInvoker, IBindingInvoker>();
+            container.RegisterTypeAs<SynchronousBindingDelegateInvoker, ISynchronousBindingDelegateInvoker>();
             container.RegisterTypeAs<TestObjectResolver, ITestObjectResolver>();
 
             container.RegisterTypeAs<StepDefinitionSkeletonProvider, IStepDefinitionSkeletonProvider>();
@@ -41,6 +42,8 @@ namespace TechTalk.SpecFlow.Infrastructure
             container.RegisterTypeAs<StepTextAnalyzer, IStepTextAnalyzer>();
 
             container.RegisterTypeAs<RuntimePluginLoader, IRuntimePluginLoader>();
+            container.RegisterTypeAs<RuntimePluginLocator, IRuntimePluginLocator>();
+            container.RegisterTypeAs<RuntimePluginLocationMerger, IRuntimePluginLocationMerger>();
 
             container.RegisterTypeAs<BindingAssemblyLoader, IBindingAssemblyLoader>();
 
@@ -63,6 +66,12 @@ namespace TechTalk.SpecFlow.Infrastructure
 
             testThreadContainer.RegisterTypeAs<AsyncTraceListener, ITraceListener>();
             testThreadContainer.RegisterTypeAs<TestTracer, ITestTracer>();
+        }
+
+        public void RegisterScenarioContainerDefaults(ObjectContainer scenarioContainer)
+        {
+            scenarioContainer.RegisterTypeAs<SpecFlowOutputHelper, ISpecFlowOutputHelper>();
+
         }
     }
 }

@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(SpecFlow_Test_TFM)</TargetFrameworks>
+    <AssemblyName>TechTalk.SpecFlow.RuntimeTests</AssemblyName>
+    <AssemblyOriginatorKeyFile>$(SpecFlow_KeyFile)</AssemblyOriginatorKeyFile>
+    <SignAssembly>$(SpecFlow_EnableStrongNameSigning)</SignAssembly>
+    <PublicSign>$(SpecFlow_PublicSign)</PublicSign>
+    <PackageId>TechTalk.SpecFlow.RuntimeTests</PackageId>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\TechTalk.SpecFlow\TechTalk.SpecFlow.csproj" />
+    <ProjectReference Include="..\..\TechTalk.SpecFlow.Utils\TechTalk.SpecFlow.Utils.csproj" />
+    <ProjectReference Include="..\..\TechTalk.SpecFlow.Parser\TechTalk.SpecFlow.Parser.csproj" />
+    <ProjectReference Include="..\..\TechTalk.SpecFlow.Generator\TechTalk.SpecFlow.Generator.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <PackageReference Include="FluentAssertions" Version="5.4.2" />
+    <PackageReference Include="Moq" Version="4.10.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.console" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.4.1" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

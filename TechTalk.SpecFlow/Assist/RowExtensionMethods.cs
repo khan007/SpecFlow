@@ -75,6 +75,11 @@ namespace TechTalk.SpecFlow.Assist
             return GetTheEnumValue<T>(row[1], row[0]);
         }
 
+        public static TEnum GetEnumValue<TEnum>(this TableRow row, string id)
+        {
+            return (TEnum)Enum.Parse(typeof(TEnum), row[id]);
+        }
+
         public static Enum GetEnum<T>(this TableRow row, string id)
         {
             return GetTheEnumValue<T>(row[id], id);
@@ -159,5 +164,39 @@ namespace TechTalk.SpecFlow.Assist
         {
             return row.Any(x => x.Key == id);
         }
-    }
+
+		/// <summary>
+		/// Creates a new instance of <typeparamref name="T"/> from the <see cref="TableRow"/>.
+		/// </summary>
+		/// <typeparam name="T">The type of the instance to be created.</typeparam>
+		/// <param name="row">The table row.</param>
+		/// <returns>A new instance of <typeparamref name="T"/> filled with the data from the <see cref="TableRow"/>.</returns>
+		public static T CreateInstance<T>(this TableRow row)
+		{
+			var instanceTable = row.ToTable();
+			return instanceTable.CreateInstance<T>();
+		}
+		
+		/// <summary>
+		/// Creates a new instance of <typeparamref name="T"/> from the <see cref="TableRow"/>.
+		/// </summary>
+		/// <typeparam name="T">The type of the instance to be created.</typeparam>
+		/// <param name="row">The table row.</param>
+		/// <param name="methodToCreateTheInstance">The method to create a new instance.</param>
+		/// <returns>A new instance of <typeparamref name="T"/> filled with the data from the <see cref="TableRow"/>.</returns>
+		public static T CreateInstance<T>(this TableRow row, Func<T> methodToCreateTheInstance)
+		{
+			var instanceTable = row.ToTable();
+			return instanceTable.CreateInstance<T>(methodToCreateTheInstance);
+		}
+
+		private static Table ToTable(this TableRow row)
+		{
+			var instanceTable = new Table("Field", "Value");
+			foreach (var kvp in row)
+				instanceTable.AddRow(kvp.Key, kvp.Value);
+
+			return instanceTable;
+		}
+	}
 }

@@ -1,30 +1,27 @@
 ﻿using System;
 using System.Globalization;
 using System.Threading;
-using NUnit.Framework;
+using Xunit;
 using FluentAssertions;
 using TechTalk.SpecFlow.Assist.ValueRetrievers;
 
 namespace TechTalk.SpecFlow.RuntimeTests.AssistTests.ValueRetrieverTests
 {
-    [TestFixture]
     public class NullableFloatValueRetrieverTests
-	{
-		[SetUp]
-		public void TestSetup()
-		{
-			// this is required, because the tests depend on parsing decimals with the en-US culture
-			Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
-		}
+    {
+        public NullableFloatValueRetrieverTests()
+        {
+            Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
+        }
 
-		[Test]
+        [Fact]
         public void Returns_null_when_passed_null()
         {
             var retriever = new NullableFloatValueRetriever(v => 3.01F);
             retriever.GetValue(null).Should().Be(null);
         }
 
-        [Test]
+        [Fact]
         public void Returns_value_from_Single_value_retriever_when_not_empty()
         {
             Func<string, Single> func = v =>
@@ -39,7 +36,7 @@ namespace TechTalk.SpecFlow.RuntimeTests.AssistTests.ValueRetrieverTests
             retriever.GetValue("value 2").Should().Be(2F);
         }
 
-        [Test]
+        [Fact]
         public void Returns_null_when_passed_empty_string()
         {
             var retriever = new NullableFloatValueRetriever(v => 99F);

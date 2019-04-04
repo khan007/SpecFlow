@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using BoDi;
 using TechTalk.SpecFlow.BindingSkeletons;
 using TechTalk.SpecFlow.Compatibility;
@@ -55,7 +56,6 @@ namespace TechTalk.SpecFlow.Configuration
         private static StepDefinitionSkeletonStyle DefaultStepDefinitionSkeletonStyle => ConfigDefaults.StepDefinitionSkeletonStyle;
 
         private static List<string> DefaultAdditionalStepAssemblies => new List<string>();
-        private static List<PluginDescriptor> DefaultPluginDescriptors => new List<PluginDescriptor>();
         private static bool DefaultAllowDebugGeneratedFiles => ConfigDefaults.AllowDebugGeneratedFiles;
         private static bool DefaultAllowRowTests => ConfigDefaults.AllowRowTests;
         public static string DefaultGeneratorPath => ConfigDefaults.GeneratorPath;
@@ -139,7 +139,6 @@ namespace TechTalk.SpecFlow.Configuration
                 new ContainerRegistrationCollection(), 
                 DefaultFeatureLanguage, 
                 DefaultBindingCulture, 
-                DefaultUnitTestProvider, 
                 DefaultStopAtFirstError, 
                 DefaultMissingOrPendingStepsOutcome,
                 DefaultTraceSuccessfulSteps, 
@@ -147,7 +146,6 @@ namespace TechTalk.SpecFlow.Configuration
                 DefaultMinTracedDuration,
                 DefaultStepDefinitionSkeletonStyle, 
                 DefaultAdditionalStepAssemblies, 
-                DefaultPluginDescriptors,
                 DefaultAllowDebugGeneratedFiles, 
                 DefaultAllowRowTests,
                 DefaultMarkFeaturesParallelizable,
@@ -183,10 +181,11 @@ namespace TechTalk.SpecFlow.Configuration
             return _jsonConfigurationLoader.LoadJson(specFlowConfiguration, jsonContent);
         }
 
-        private static string GetSpecflowJsonFilePath()
+        private string GetSpecflowJsonFilePath()
         {
-            var directory = Path.GetDirectoryName(typeof(ConfigurationLoader).Assembly.Location);
-            var specflowJsonFile = Path.Combine(directory, "specflow.json");
+            //var directory = Path.GetDirectoryName(typeof(ConfigurationLoader).Assembly.Location);
+            //var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var specflowJsonFile = Path.Combine(Environment.CurrentDirectory, "specflow.json"); //todo: check if this works in real project
             return specflowJsonFile;
         }
     }

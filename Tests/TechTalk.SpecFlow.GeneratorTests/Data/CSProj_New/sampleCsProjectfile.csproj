@@ -9,9 +9,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Features\WorkflowDefinition\CreateWorkflowDefinition.feature">
+    <None Update=".\Features\WorkflowDefinition\CreateWorkflowDefinition.feature">
       <CustomToolNamespace>CustomNameSpace</CustomToolNamespace>
     </None>
+
+    <None Include=".\Features\**\*.feature" />
 
     <None Include="..\..\LinkedFeature.feature" Link="LinkedFeature.feature" />
 

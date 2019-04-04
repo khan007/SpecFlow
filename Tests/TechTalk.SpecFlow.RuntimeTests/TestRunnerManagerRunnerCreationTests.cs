@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using BoDi;
 using FluentAssertions;
 using Moq;
-using NUnit.Framework;
+using Xunit;
 using TechTalk.SpecFlow.Bindings.Discovery;
 using TechTalk.SpecFlow.Configuration;
 using TechTalk.SpecFlow.Infrastructure;
@@ -14,7 +14,7 @@ using TechTalk.SpecFlow.Tracing;
 
 namespace TechTalk.SpecFlow.RuntimeTests
 {
-    [TestFixture]
+    
     public class TestRunnerManagerRunnerCreationTests
     {
         private readonly Mock<ITestRunner> testRunnerFake = new Mock<ITestRunner>();
@@ -36,12 +36,13 @@ namespace TechTalk.SpecFlow.RuntimeTests
 
             var runtimeBindingRegistryBuilderMock = new Mock<IRuntimeBindingRegistryBuilder>();
 
-            var testRunnerManager = new TestRunnerManager(globalObjectContainerStub.Object, testRunContainerBuilderStub.Object, _specFlowConfigurationStub, runtimeBindingRegistryBuilderMock.Object);
+            var testRunnerManager = new TestRunnerManager(globalObjectContainerStub.Object, testRunContainerBuilderStub.Object, _specFlowConfigurationStub, runtimeBindingRegistryBuilderMock.Object,
+                Mock.Of<ITestTracer>());
             testRunnerManager.Initialize(anAssembly);
             return testRunnerManager;
         }
 
-        [Test]
+        [Fact]
         public void Should_resolve_a_test_runner()
         {
             var factory = CreateTestRunnerFactory();
@@ -50,7 +51,7 @@ namespace TechTalk.SpecFlow.RuntimeTests
             testRunner.Should().NotBeNull();
         }
 
-        [Test]
+        [Fact]
         public void Should_initialize_test_runner_with_the_provided_assembly()
         {
             var factory = CreateTestRunnerFactory();
@@ -59,7 +60,7 @@ namespace TechTalk.SpecFlow.RuntimeTests
             testRunnerFake.Verify(tr => tr.OnTestRunStart());
         }
 
-        [Test]
+        [Fact]
         public void Should_initialize_test_runner_with_additional_step_assemblies()
         {
             var factory = CreateTestRunnerFactory();
@@ -70,7 +71,7 @@ namespace TechTalk.SpecFlow.RuntimeTests
             testRunnerFake.Verify(tr => tr.OnTestRunStart());
         }
 
-        [Test]
+        [Fact]
         public void Should_initialize_test_runner_with_the_provided_assembly_even_if_there_are_additional_ones()
         {
             var factory = CreateTestRunnerFactory();
@@ -79,10 +80,11 @@ namespace TechTalk.SpecFlow.RuntimeTests
             factory.CreateTestRunner(0);
 
             testRunnerFake.Verify(tr => tr.OnTestRunStart());
+
         }
 
 
-        [Test]
+        [Fact]
         public void Should_resolve_a_test_runner_specific_test_tracer()
         {
             //This test can't run in NCrunch as when NCrunch runs the tests it will disable the ability to get different test runners for each thread 
@@ -92,18 +94,18 @@ namespace TechTalk.SpecFlow.RuntimeTests
             {
                 var testRunner1 = TestRunnerManager.GetTestRunner(anAssembly, 0);
                 testRunner1.OnFeatureStart(new FeatureInfo(new CultureInfo("en-US"), "sds", "sss"));
-                testRunner1.OnScenarioStart(new ScenarioInfo("foo", "foo_desc"));
+                testRunner1.OnScenarioInitialize(new ScenarioInfo("foo", "foo_desc"));
+                testRunner1.OnScenarioStart();
                 var tracer1 = testRunner1.ScenarioContext.ScenarioContainer.Resolve<ITestTracer>();
 
                 var testRunner2 = TestRunnerManager.GetTestRunner(anAssembly, 1);
                 testRunner2.OnFeatureStart(new FeatureInfo(new CultureInfo("en-US"), "sds", "sss"));
-                testRunner2.OnScenarioStart(new ScenarioInfo("foo", "foo_desc"));
+                testRunner2.OnScenarioInitialize(new ScenarioInfo("foo", "foo_desc"));
+                testRunner1.OnScenarioStart();
                 var tracer2 = testRunner2.ScenarioContext.ScenarioContainer.Resolve<ITestTracer>();
 
                 tracer1.Should().NotBeSameAs(tracer2);
-            }
-            
+            }       
         }
     }
-
 }

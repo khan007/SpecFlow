@@ -1,21 +1,18 @@
-﻿using System;
-using System.CodeDom;
+﻿using System.CodeDom;
 using System.Linq;
-using Gherkin.Ast;
+using FluentAssertions;
 using Microsoft.CSharp;
-
-using NUnit.Framework;
-
+using TechTalk.SpecFlow.Generator.CodeDom;
+using Xunit;
 using TechTalk.SpecFlow.Generator.UnitTestProvider;
 using TechTalk.SpecFlow.Parser;
-using TechTalk.SpecFlow.Utils;
 
 namespace TechTalk.SpecFlow.GeneratorTests
 {
-    [TestFixture]
+    
     public class XUnitTestGeneratorProviderTests
     {
-        [Test]
+        [Fact]
         public void Should_set_skip_attribute_for_theory()
         {
             // Arrange
@@ -34,21 +31,26 @@ namespace TechTalk.SpecFlow.GeneratorTests
             var modifiedAttribute = codeMemberMethod.CustomAttributes.OfType<CodeAttributeDeclaration>()
                 .FirstOrDefault(a => a.Name == XUnitTestGeneratorProvider.THEORY_ATTRIBUTE);
 
-            Assert.That(modifiedAttribute, Is.Not.Null);
+            modifiedAttribute.Should().NotBeNull();
+
+            
             var attribute = modifiedAttribute.Arguments.OfType<CodeAttributeArgument>()
                 .FirstOrDefault(a => a.Name == XUnitTestGeneratorProvider.THEORY_ATTRIBUTE_SKIP_PROPERTY_NAME);
-            Assert.That(attribute, Is.Not.Null);
+
+            attribute.Should().NotBeNull();
+            
 
             var primitiveExpression = attribute.Value as CodePrimitiveExpression;
-            Assert.That(primitiveExpression, Is.Not.Null);
-            Assert.That(primitiveExpression.Value, Is.EqualTo(XUnitTestGeneratorProvider.SKIP_REASON));
+
+            primitiveExpression.Should().NotBeNull();
+            primitiveExpression.Value.Should().Be(XUnitTestGeneratorProvider.SKIP_REASON);
         }
 
         /*
          * Based on w1ld's `Should_set_skip_attribute_for_theory`,
          * refactor as appropriate.
          */
-        [Test]
+        [Fact]
         public void Should_set_displayname_attribute()
         {
             // Arrange
@@ -63,7 +65,7 @@ namespace TechTalk.SpecFlow.GeneratorTests
                         keyword: null,
                         name: "",
                         description: null,
-                        children:null
+                        children: null
                         ),
                     comments: null, 
                     sourceFilePath: null),
@@ -75,6 +77,7 @@ namespace TechTalk.SpecFlow.GeneratorTests
                 testInitializeMethod: null,
                 testCleanupMethod: null,
                 scenarioInitializeMethod: null,
+                scenarioStartMethod: null,
                 scenarioCleanupMethod: null,
                 featureBackgroundMethod: null,
                 generateRowTests: false);
@@ -87,14 +90,18 @@ namespace TechTalk.SpecFlow.GeneratorTests
             var modifiedAttribute = codeMemberMethod.CustomAttributes.OfType<CodeAttributeDeclaration>()
                 .FirstOrDefault(a => a.Name == "Xunit.FactAttribute");
 
-            Assert.That(modifiedAttribute, Is.Not.Null);
+            modifiedAttribute.Should().NotBeNull();
+
             var attribute = modifiedAttribute.Arguments.OfType<CodeAttributeArgument>()
                 .FirstOrDefault(a => a.Name == "DisplayName");
-            Assert.That(attribute, Is.Not.Null);
+
+            attribute.Should().NotBeNull();
+            
 
             var primitiveExpression = attribute.Value as CodePrimitiveExpression;
-            Assert.That(primitiveExpression, Is.Not.Null);
-            Assert.That(primitiveExpression.Value, Is.EqualTo("Foo"));
+
+            primitiveExpression.Should().NotBeNull();
+            primitiveExpression.Value.Should().Be("Foo");
         }
     }
 }

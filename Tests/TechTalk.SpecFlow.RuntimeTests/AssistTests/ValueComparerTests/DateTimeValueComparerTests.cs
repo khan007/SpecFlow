@@ -1,23 +1,20 @@
 ﻿using System;
 using System.Globalization;
 using System.Threading;
-using NUnit.Framework;
+using Xunit;
 using FluentAssertions;
 using TechTalk.SpecFlow.Assist.ValueComparers;
 
 namespace TechTalk.SpecFlow.RuntimeTests.AssistTests.ValueComparerTests
 {
-    [TestFixture]
     public class DateTimeValueComparerTests
     {
-	    [SetUp]
-	    public void TestSetup()
-	    {
-		    // this is required, because the tests depend on parsing decimals with the en-US culture
-		    Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
-	    }
+        public DateTimeValueComparerTests()
+        {
+            Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
+        }
 
-		[Test]
+        [Fact]
         public void Can_compare_if_the_value_is_a_datetime()
         {
             new DateTimeValueComparer()
@@ -25,7 +22,7 @@ namespace TechTalk.SpecFlow.RuntimeTests.AssistTests.ValueComparerTests
                 .Should().BeTrue();
         }
 
-        [Test]
+        [Fact]
         public void Cannot_compare_if_the_value_is_not_a_datetime()
         {
             var comparer = new DateTimeValueComparer();
@@ -34,7 +31,7 @@ namespace TechTalk.SpecFlow.RuntimeTests.AssistTests.ValueComparerTests
             comparer.CanCompare(4.3).Should().BeFalse();
         }
 
-        [Test]
+        [Fact]
         public void Cannot_compare_if_the_value_is_null()
         {
             new DateTimeValueComparer()
@@ -42,7 +39,7 @@ namespace TechTalk.SpecFlow.RuntimeTests.AssistTests.ValueComparerTests
                 .Should().BeFalse();
         }
 
-        [Test]
+        [Fact]
         public void Returns_true_when_the_string_and_values_match_exactly()
         {
             var comparer = new DateTimeValueComparer();
@@ -52,7 +49,7 @@ namespace TechTalk.SpecFlow.RuntimeTests.AssistTests.ValueComparerTests
                 .Should().BeTrue();
         }
 
-        [Test]
+        [Fact]
         public void Returns_false_when_the_string_and_values_match_for_different_dates()
         {
             var comparer = new DateTimeValueComparer();
@@ -66,7 +63,7 @@ namespace TechTalk.SpecFlow.RuntimeTests.AssistTests.ValueComparerTests
                 .Should().BeFalse();
         }
 
-        [Test]
+        [Fact]
         public void Returns_false_when_the_expected_value_is_not_a_valid_datetime()
         {
             var comparer = new DateTimeValueComparer();
@@ -76,7 +73,7 @@ namespace TechTalk.SpecFlow.RuntimeTests.AssistTests.ValueComparerTests
                 .Should().BeFalse();
         }
 
-        [Test]
+        [Fact]
         public void Returns_false_the_value_is_correct_format_but_not_a_valid_date()
         {
             var comparer = new DateTimeValueComparer();

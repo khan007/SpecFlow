@@ -1,0 +1,29 @@
+name: SpecFlow.CI 
+
+
+resources:
+- repo: self
+  clean: true
+
+
+jobs:
+# - template: build.yml  
+#   parameters:
+#    name: macOS
+#    artifactFileName: '$(Build.ArtifactStagingDirectory)/SpecFlow-macOS.zip'
+#    pool:
+#      name: 'Hosted macOS'
+
+- template: build.yml  
+  parameters:
+    name: Windows
+    artifactFileName: '$(Build.ArtifactStagingDirectory)/SpecFlow-Windows.zip'
+    pool:
+      name: 'Hosted VS2017'
+
+# - template: build.yml  
+#   parameters:
+#     name: Linux
+#     artifactFileName: '$(Build.ArtifactStagingDirectory)/SpecFlow-Windows.zip'
+#     pool:
+#       name: 'Hosted Ubuntu 1604'

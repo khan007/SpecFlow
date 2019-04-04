@@ -2,7 +2,7 @@
 using System.Linq;
 using BoDi;
 using FluentAssertions;
-using NUnit.Framework;
+using Xunit;
 using TechTalk.SpecFlow.BindingSkeletons;
 using TechTalk.SpecFlow.Configuration;
 using TechTalk.SpecFlow.Configuration.JsonConfig;
@@ -10,12 +10,11 @@ using TechTalk.SpecFlow.Plugins;
 
 namespace TechTalk.SpecFlow.RuntimeTests.Configuration
 {
-    [TestFixture]
+    
     public class JsonConfigTests
     {            
-        [Test]
-        [TestCase(@"{
-          ""specFlow"": {
+        [Theory]
+        [InlineData(@"{
             ""language"": {
               ""feature"": ""en"",
               ""tool"": ""en""
@@ -25,21 +24,20 @@ namespace TechTalk.SpecFlow.RuntimeTests.Configuration
               ""generatorProvider"": ""TechTalk.SpecFlow.TestFrameworkIntegration.NUnitRuntimeProvider, TechTalk.SpecFlow"",
               ""runtimeProvider"": ""TechTalk.SpecFlow.UnitTestProvider.NUnitRuntimeProvider, TechTalk.SpecFlow""
             },
-            ""generator"": { ""allowDebugGeneratedFiles"": ""false"" , ""markFeaturesParallelizable"": ""false"", 
+            ""generator"": { ""allowDebugGeneratedFiles"": false , ""markFeaturesParallelizable"": false, 
                              ""skipParallelizableMarkerForTags"": [""mySpecialTag1"", ""mySpecialTag2""]},
-            ""runtime"": {
-              ""detectAmbiguousMatches"": ""true"",
-              ""stopAtFirstError"": ""false"",
+            ""runtime"": {              
+              ""stopAtFirstError"": false,
               ""missingOrPendingStepsOutcome"": ""Inconclusive""
             },
             ""trace"": {
-              ""traceSuccessfulSteps"": ""true"",
-              ""traceTimings"": ""false"",
+              ""traceSuccessfulSteps"": true,
+              ""traceTimings"": false,
               ""minTracedDuration"": ""0:0:0.1"",
               ""listener"": ""TechTalk.SpecFlow.Tracing.DefaultListener, TechTalk.SpecFlow""
             }
-          }
         }")]
+
         public void CanLoadConfigFromString(string configString)
         {
             var configurationLoader = new JsonConfigurationLoader();
@@ -47,13 +45,11 @@ namespace TechTalk.SpecFlow.RuntimeTests.Configuration
             configurationLoader.LoadJson(ConfigurationLoader.GetDefault(), configString);
         }
 
-        [Test]
+        [Fact]
         public void CheckFeatureLanguage()
         {
             string config = @"{
-                              ""specflow"": {
                                 ""language"": { ""feature"": ""de"" }
-                              }
                             }";
             
             var runtimeConfig = new JsonConfigurationLoader().LoadJson(ConfigurationLoader.GetDefault(), config);
@@ -61,13 +57,11 @@ namespace TechTalk.SpecFlow.RuntimeTests.Configuration
             runtimeConfig.FeatureLanguage.TwoLetterISOLanguageName.Should().Be("de");
         }       
 
-        [Test]
+        [Fact]
         public void CheckBindingCulture()
         {
             string config = @"{
-                              ""specflow"": {
                                 ""bindingCulture"": { ""name"": ""de"" }
-                              }
                             }";
 
             
@@ -77,46 +71,23 @@ namespace TechTalk.SpecFlow.RuntimeTests.Configuration
             runtimeConfig.BindingCulture.TwoLetterISOLanguageName.Should().Be("de");
         }
 
-        [Test]
-        public void CheckUnitTestProvider()
-        {
-            string config = @"{
-                              ""specflow"": {
-                                ""unitTestProvider"": { ""name"": ""XUnit"" }
-                              }
-                            }";
-
-            
-
-            var runtimeConfig = new JsonConfigurationLoader().LoadJson(ConfigurationLoader.GetDefault(), config);
-
-            runtimeConfig.UnitTestProvider.Should().Be("XUnit");
-        }
-        
-
-        [Test]
+        [Fact]
         public void Check_Runtime_stopAtFirstError_as_true()
         {
             string config = @"{
-                              ""specflow"": {
-                                ""runtime"": { ""stopAtFirstError"": ""true"" }
-                              }
+                                ""runtime"": { ""stopAtFirstError"": true }
                             }";
-
-            
 
             var runtimeConfig = new JsonConfigurationLoader().LoadJson(ConfigurationLoader.GetDefault(), config);
 
             runtimeConfig.StopAtFirstError.Should().BeTrue();
         }
 
-        [Test]
+        [Fact]
         public void Check_Runtime_stopAtFirstError_as_false()
         {
             string config = @"{
-                              ""specflow"": {
-                                ""runtime"": { ""stopAtFirstError"": ""false"" }
-                              }
+                                ""runtime"": { ""stopAtFirstError"": false }
                             }";
 
             
@@ -126,13 +97,11 @@ namespace TechTalk.SpecFlow.RuntimeTests.Configuration
             runtimeConfig.StopAtFirstError.Should().BeFalse();
         }
 
-        [Test]
+        [Fact]
         public void Check_Runtime_missingOrPendingStepsOutcome_as_Pending()
         {
             string config = @"{
-                              ""specflow"": {
                                 ""runtime"": { ""missingOrPendingStepsOutcome"": ""Pending"" }
-                              }
                             }";
 
             
@@ -142,13 +111,11 @@ namespace TechTalk.SpecFlow.RuntimeTests.Configuration
             runtimeConfig.MissingOrPendingStepsOutcome.Should().Be(MissingOrPendingStepsOutcome.Pending);
         }
 
-        [Test]
+        [Fact]
         public void Check_Runtime_missingOrPendingStepsOutcome_as_Error()
         {
             string config = @"{
-                                ""specflow"": {
                                 ""runtime"": { ""missingOrPendingStepsOutcome"": ""Error"" }
-                                }
                             }";
 
             
@@ -158,13 +125,11 @@ namespace TechTalk.SpecFlow.RuntimeTests.Configuration
             runtimeConfig.MissingOrPendingStepsOutcome.Should().Be(MissingOrPendingStepsOutcome.Error);
         }
 
-        [Test]
+        [Fact]
         public void Check_Runtime_missingOrPendingStepsOutcome_as_Ignore()
         {
             string config = @"{
-                              ""specflow"": {
                                 ""runtime"": { ""missingOrPendingStepsOutcome"": ""Ignore"" }
-                              }
                             }";
 
             
@@ -174,13 +139,11 @@ namespace TechTalk.SpecFlow.RuntimeTests.Configuration
             runtimeConfig.MissingOrPendingStepsOutcome.Should().Be(MissingOrPendingStepsOutcome.Ignore);
         }
 
-        [Test]
+        [Fact]
         public void Check_Runtime_missingOrPendingStepsOutcome_as_Inconclusive()
         {
             string config = @"{
-                              ""specflow"": {
                                 ""runtime"": { ""missingOrPendingStepsOutcome"": ""Inconclusive"" }
-                              }
                             }";
 
 
@@ -190,13 +153,11 @@ namespace TechTalk.SpecFlow.RuntimeTests.Configuration
             runtimeConfig.MissingOrPendingStepsOutcome.Should().Be(MissingOrPendingStepsOutcome.Inconclusive);
         }
 
-        [Test]
+        [Fact]
         public void Check_Trace_traceSuccessfulSteps_as_True()
         {
             string config = @"{
-                              ""specflow"": {
-                                ""trace"": { ""traceSuccessfulSteps"": ""true"" }
-                              }
+                                ""trace"": { ""traceSuccessfulSteps"": true }
                             }";
 
             
@@ -206,13 +167,11 @@ namespace TechTalk.SpecFlow.RuntimeTests.Configuration
             runtimeConfig.TraceSuccessfulSteps.Should().BeTrue();
         }
 
-        [Test]
+        [Fact]
         public void Check_Trace_traceSuccessfulSteps_as_False()
         {
             string config = @"{
-                              ""specflow"": {
-                                ""trace"": { ""traceSuccessfulSteps"": ""false"" }
-                              }
+                                ""trace"": { ""traceSuccessfulSteps"": false }
                             }";
 
             
@@ -222,13 +181,11 @@ namespace TechTalk.SpecFlow.RuntimeTests.Configuration
             runtimeConfig.TraceSuccessfulSteps.Should().BeFalse();
         }
 
-        [Test]
+        [Fact]
         public void Check_Trace_traceTimings_as_True()
         {
             string config = @"{
-                              ""specflow"": {
-                                ""trace"": { ""traceTimings"": ""true"" }
-                              }
+                                ""trace"": { ""traceTimings"": true }
                             }";
 
             
@@ -238,13 +195,11 @@ namespace TechTalk.SpecFlow.RuntimeTests.Configuration
             runtimeConfig.TraceTimings.Should().BeTrue();
         }
 
-        [Test]
+        [Fact]
         public void Check_Trace_traceTimings_as_False()
         {
             string config = @"{
-                              ""specflow"": {
-                                ""trace"": { ""traceTimings"": ""false"" }
-                              }
+                                ""trace"": { ""traceTimings"": false }
                             }";
 
             
@@ -254,13 +209,11 @@ namespace TechTalk.SpecFlow.RuntimeTests.Configuration
             runtimeConfig.TraceTimings.Should().BeFalse();
         }
 
-        [Test]
+        [Fact]
         public void Check_Trace_minTracedDuration()
         {
             string config = @"{
-                              ""specflow"": {
-                                ""trace"": { ""minTracedDuration"": ""0:0:1.0"" }
-                              }
+                                ""trace"": { ""minTracedDuration"": ""0:0:0:1.0"" }
                             }";
 
             
@@ -270,13 +223,11 @@ namespace TechTalk.SpecFlow.RuntimeTests.Configuration
             runtimeConfig.MinTracedDuration.Should().Be(TimeSpan.FromSeconds(1));
         }
 
-        [Test]
+        [Fact]
         public void Trace_Listener_Not_Supported()
         {
             string config = @"{
-                              ""specflow"": {
                                 ""trace"": { ""listener"": ""TraceListener"" }
-                              }
                             }";
 
             
@@ -286,13 +237,11 @@ namespace TechTalk.SpecFlow.RuntimeTests.Configuration
             runtimeConfig.CustomDependencies.Count.Should().Be(0);
         }
 
-        [Test]
+        [Fact]
         public void Check_Trace_StepDefinitionSkeletonStyle_RegexAttribute()
         {
             string config = @"{
-                              ""specflow"": {
                                 ""trace"": { ""stepDefinitionSkeletonStyle"": ""RegexAttribute"" }
-                              }
                             }";
 
             
@@ -302,13 +251,11 @@ namespace TechTalk.SpecFlow.RuntimeTests.Configuration
             runtimeConfig.StepDefinitionSkeletonStyle.Should().Be(StepDefinitionSkeletonStyle.RegexAttribute);
         }
 
-        [Test]
+        [Fact]
         public void Check_Trace_StepDefinitionSkeletonStyle_MethodNamePascalCase()
         {
             string config = @"{
-                              ""specflow"": {
                                 ""trace"": { ""stepDefinitionSkeletonStyle"": ""MethodNamePascalCase"" }
-                              }
                             }";
 
             
@@ -318,13 +265,11 @@ namespace TechTalk.SpecFlow.RuntimeTests.Configuration
             runtimeConfig.StepDefinitionSkeletonStyle.Should().Be(StepDefinitionSkeletonStyle.MethodNamePascalCase);
         }
 
-        [Test]
+        [Fact]
         public void Check_Trace_StepDefinitionSkeletonStyle_MethodNameRegex()
         {
             string config = @"{
-                              ""specflow"": {
                                 ""trace"": { ""stepDefinitionSkeletonStyle"": ""MethodNameRegex"" }
-                              }
                             }";
 
             
@@ -334,13 +279,11 @@ namespace TechTalk.SpecFlow.RuntimeTests.Configuration
             runtimeConfig.StepDefinitionSkeletonStyle.Should().Be(StepDefinitionSkeletonStyle.MethodNameRegex);
         }
 
-        [Test]
+        [Fact]
         public void Check_Trace_StepDefinitionSkeletonStyle_MethodNameUnderscores()
         {
             string config = @"{
-                              ""specflow"": {
                                 ""trace"": { ""stepDefinitionSkeletonStyle"": ""MethodNameUnderscores"" }
-                              }
                             }";
 
             
@@ -350,14 +293,12 @@ namespace TechTalk.SpecFlow.RuntimeTests.Configuration
             runtimeConfig.StepDefinitionSkeletonStyle.Should().Be(StepDefinitionSkeletonStyle.MethodNameUnderscores);
         }
 
-        [Test]
+        [Fact]
         public void Check_StepAssemblies_IsEmpty()
         {
             string config = @"{
-                              ""specflow"": {
                                   ""stepAssemblies"" : [
                                  ]
-                              }
                             }";
 
             
@@ -367,13 +308,10 @@ namespace TechTalk.SpecFlow.RuntimeTests.Configuration
             runtimeConfig.AdditionalStepAssemblies.Should().BeEmpty();
         }
 
-        [Test]
+        [Fact]
         public void Check_StepAssemblies_NotInConfigFile()
         {
             string config = @"{
-                                ""specflow"": {
-    
-                                }
                             }";
 
             
@@ -383,14 +321,12 @@ namespace TechTalk.SpecFlow.RuntimeTests.Configuration
             runtimeConfig.AdditionalStepAssemblies.Should().BeEmpty();
         }
 
-        [Test]
+        [Fact]
         public void Check_StepAssemblies_OneEntry()
         {
             string config = @"{
-                              ""specflow"": {
                                 ""stepAssemblies"": 
                                    [ {""assembly"": ""testEntry""} ]
-                              }
                             }";
 
             
@@ -401,16 +337,14 @@ namespace TechTalk.SpecFlow.RuntimeTests.Configuration
             runtimeConfig.AdditionalStepAssemblies.First().Should().Be("testEntry");
         }
 
-        [Test]
+        [Fact]
         public void Check_StepAssemblies_TwoEntry()
         {
             string config = @"{
-                              ""specflow"": {
                                 ""stepAssemblies"": [
                                     { ""assembly"": ""testEntry1"" },
                                     { ""assembly"": ""testEntry2"" }
                                   ]
-                              }
                             }";
 
             
@@ -422,193 +356,5 @@ namespace TechTalk.SpecFlow.RuntimeTests.Configuration
             runtimeConfig.AdditionalStepAssemblies[1].Should().Be("testEntry2");
         }
 
-        [Test]
-        public void Check_Plugins_IsEmpty()
-        {
-            string config = @"{
-                              ""specflow"": {
-                                ""plugins"": []
-                              }
-                            }";
-
-            
-
-            var runtimeConfig = new JsonConfigurationLoader().LoadJson(ConfigurationLoader.GetDefault(), config);
-
-            runtimeConfig.Plugins.Should().BeEmpty();
-        }
-
-        [Test]
-        public void Check_Plugins_NotInConfigFile()
-        {
-            string config = @"{
-                              ""specflow"": {
-    
-                              }
-                            }";
-
-            
-
-            var runtimeConfig = new JsonConfigurationLoader().LoadJson(ConfigurationLoader.GetDefault(), config);
-
-            runtimeConfig.Plugins.Should().BeEmpty();
-        }
-
-        [Test]
-        public void Check_Plugins_OneEntry()
-        {
-            string config = @"{
-                              ""specflow"": {
-                                ""plugins"": 
-                                  [
-                                    { ""name"": ""testEntry"" }
-                                  ]                                
-                              }
-                            }";
-
-            
-
-            var runtimeConfig = new JsonConfigurationLoader().LoadJson(ConfigurationLoader.GetDefault(), config);
-
-            runtimeConfig.Plugins.Count.Should().Be(1);
-            runtimeConfig.Plugins.First().Name.Should().Be("testEntry");
-        }
-
-        [Test]
-        public void Check_Plugins_PluginPath()
-        {
-            string config = @"{
-                              ""specflow"": {
-                                ""plugins"": 
-                                  [
-                                    { ""name"": ""testEntry"", ""path"":""path_to_assembly"" }
-                                  ]                                
-                              }
-                            }";
-            
-
-            var runtimeConfig = new JsonConfigurationLoader().LoadJson(ConfigurationLoader.GetDefault(), config);
-
-            runtimeConfig.Plugins.Count.Should().Be(1);
-            runtimeConfig.Plugins.First().Path.Should().Be("path_to_assembly");
-        }
-
-        [Test]
-        public void Check_Plugins_Parameters()
-        {
-            string config = @"{
-                              ""specflow"": {
-                                ""plugins"": 
-                                  [
-                                    { ""name"": ""testEntry"", ""parameters"":""pluginParameter"" }
-                                  ]                                
-                              }
-                            }";
-            
-
-            var runtimeConfig = new JsonConfigurationLoader().LoadJson(ConfigurationLoader.GetDefault(), config);
-
-            runtimeConfig.Plugins.Count.Should().Be(1);
-            runtimeConfig.Plugins.First().Parameters.Should().Be("pluginParameter");
-        }
-
-        [Test]
-        public void Check_Plugins_PluginType_Runtime()
-        {
-            string config = @"{
-                              ""specflow"": {
-                                ""plugins"": 
-                                  [
-                                    { ""name"": ""testEntry"", ""type"":""Runtime"" }
-                                  ]                                
-                              }
-                            }";
-
-            
-
-            var runtimeConfig = new JsonConfigurationLoader().LoadJson(ConfigurationLoader.GetDefault(), config);
-
-            runtimeConfig.Plugins.Count.Should().Be(1);
-            runtimeConfig.Plugins.First().Type.Should().Be(PluginType.Runtime);
-        }
-
-        [Test]
-        public void Check_Plugins_PluginType_Generator()
-        {
-            string config = @"{
-                              ""specflow"": {
-                                ""plugins"": 
-                                  [
-                                    { ""name"": ""testEntry"", ""type"":""Generator"" }
-                                  ]                                
-                              }
-                            }";
-            
-
-            var runtimeConfig = new JsonConfigurationLoader().LoadJson(ConfigurationLoader.GetDefault(), config);
-
-            runtimeConfig.Plugins.Count.Should().Be(1);
-            runtimeConfig.Plugins.First().Type.Should().Be(PluginType.Generator);
-        }
-
-        [Test]
-        public void Check_Plugins_PluginType_GeneratorAndRuntime()
-        {
-            string config = @"{
-                              ""specflow"": {
-                                ""plugins"": 
-                                  [
-                                    { ""name"": ""testEntry"", ""type"":""GeneratorAndRuntime"" }
-                                  ]                                
-                              }
-                            }";        
-            
-
-            var runtimeConfig = new JsonConfigurationLoader().LoadJson(ConfigurationLoader.GetDefault(), config);
-
-            runtimeConfig.Plugins.Count.Should().Be(1);
-            runtimeConfig.Plugins.First().Type.Should().Be(PluginType.GeneratorAndRuntime);
-        }
-
-        [Test]
-        public void Check_Plugins_TwoEntry()
-        {
-            string config = @"{
-                              ""specflow"": {
-                                ""plugins"": 
-                                  [
-                                    { ""name"": ""testEntry1"" },
-                                    { ""name"": ""testEntry2"" }
-                                  ]                                
-                              }
-                            }";
-
-            
-
-            var runtimeConfig = new JsonConfigurationLoader().LoadJson(ConfigurationLoader.GetDefault(), config);
-
-            runtimeConfig.Plugins.Count.Should().Be(2);
-            runtimeConfig.Plugins[0].Name.Should().Be("testEntry1");
-            runtimeConfig.Plugins[1].Name.Should().Be("testEntry2");
-        }
-
-        [Test]
-        public void Check_Plugins_TwoSameNameEntry()
-        {
-            string config = @"{
-                              ""specflow"": {
-                                ""plugins"": 
-                                  [
-                                    { ""name"": ""testEntry"" },
-                                    { ""name"": ""testEntry"" }
-                                  ]                                
-                              }
-                            }";
-
-            var runtimeConfig = new JsonConfigurationLoader().LoadJson(ConfigurationLoader.GetDefault(), config);
-
-            runtimeConfig.Plugins.Count.Should().Be(1);
-            runtimeConfig.Plugins[0].Name.Should().Be("testEntry");
-        }
     }
 }

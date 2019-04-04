@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 using TechTalk.SpecFlow.Bindings.Reflection;
 using TechTalk.SpecFlow.Compatibility;
 using TechTalk.SpecFlow.Configuration;
@@ -14,17 +15,17 @@ using TechTalk.SpecFlow.Tracing;
 
 namespace TechTalk.SpecFlow.Bindings
 {
-    using System.Threading.Tasks;
-
     public class BindingInvoker : IBindingInvoker
     {
         protected readonly Configuration.SpecFlowConfiguration specFlowConfiguration;
         protected readonly IErrorProvider errorProvider;
+        protected readonly ISynchronousBindingDelegateInvoker synchronousBindingDelegateInvoker;
 
-        public BindingInvoker(Configuration.SpecFlowConfiguration specFlowConfiguration, IErrorProvider errorProvider)
+        public BindingInvoker(Configuration.SpecFlowConfiguration specFlowConfiguration, IErrorProvider errorProvider, ISynchronousBindingDelegateInvoker synchronousBindingDelegateInvoker)
         {
             this.specFlowConfiguration = specFlowConfiguration;
             this.errorProvider = errorProvider;
+            this.synchronousBindingDelegateInvoker = synchronousBindingDelegateInvoker;
         }
 
         public virtual object InvokeBinding(IBinding binding, IContextManager contextManager, object[] arguments, ITestTracer testTracer, out TimeSpan duration)
@@ -44,13 +45,10 @@ namespace TechTalk.SpecFlow.Bindings
                     if (arguments != null)
                         Array.Copy(arguments, 0, invokeArgs, 1, arguments.Length);
                     invokeArgs[0] = contextManager;
-                    result = bindingAction.DynamicInvoke(invokeArgs);
 
-                    if (result is Task)
-                    {
-                        ((Task)result).Wait();
-                    }
-                   
+                    result = synchronousBindingDelegateInvoker
+                        .InvokeDelegateSynchronously(bindingAction, invokeArgs);
+
                     stopwatch.Stop();
                 }
 

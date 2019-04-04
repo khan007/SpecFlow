@@ -1,69 +1,61 @@
-﻿using System;
-using FluentAssertions;
-using TechTalk.SpecFlow.Specs.Drivers;
+﻿using TechTalk.SpecFlow.TestProjectGenerator;
+using TechTalk.SpecFlow.TestProjectGenerator.Driver;
+using TechTalk.SpecFlow.TestProjectGenerator.NewApi;
 
 namespace TechTalk.SpecFlow.Specs.StepDefinitions
 {
     [Binding]
     public class ExecutionSteps
     {
-        private readonly ProjectSteps projectSteps;
-        private readonly AppConfigConfigurationDriver configurationDriver;
-        private readonly NUnit3TestExecutionDriver nUnit3TestExecutionDriver;
-        private readonly NUnit2TestExecutionDriver nUnit2TestExecutionDriver;
-        private readonly XUnitTestExecutionDriver xUnitTestExecutionDriver;
-        private readonly MsTestTestExecutionDriver msTestTestExecutionDriver;
+        private readonly SolutionDriver _solutionDriver;
+        private readonly VSTestExecutionDriver _vsTestExecution;
+        private readonly TestRunConfiguration _testRunConfiguration;
 
-        public ExecutionSteps(NUnit3TestExecutionDriver nUnit3TestExecutionDriver, NUnit2TestExecutionDriver nUnit2TestExecutionDriver, XUnitTestExecutionDriver xUnitTestExecutionDriver,
-            AppConfigConfigurationDriver configurationDriver, MsTestTestExecutionDriver msTestTestExecutionDriver,
-            ProjectSteps projectSteps)
+        public ExecutionSteps(SolutionDriver solutionDriver, VSTestExecutionDriver vsTestExecution, TestRunConfiguration testRunConfiguration)
         {
-            this.nUnit3TestExecutionDriver = nUnit3TestExecutionDriver;
-            this.nUnit2TestExecutionDriver = nUnit2TestExecutionDriver;
-            this.xUnitTestExecutionDriver = xUnitTestExecutionDriver;
-            this.projectSteps = projectSteps;
-            this.msTestTestExecutionDriver = msTestTestExecutionDriver;
-            this.configurationDriver = configurationDriver;
+            _solutionDriver = solutionDriver;
+            _vsTestExecution = vsTestExecution;
+            _testRunConfiguration = testRunConfiguration;
         }
 
         [When(@"I execute the tests")]
         public void WhenIExecuteTheTests()
         {
-            configurationDriver.UnitTestProviderName.Should().Be("NUnit");
-
-            projectSteps.EnsureCompiled();
-            nUnit3TestExecutionDriver.Execute();
+            _solutionDriver.CompileSolution(BuildTool.MSBuild);
+            _solutionDriver.CheckSolutionShouldHaveCompiled();
+            _vsTestExecution.ExecuteTests();
         }
 
         [When(@"I execute the tests tagged with '@(.+)'")]
         public void WhenIExecuteTheTestsTaggedWithTag(string tag)
         {
-            nUnit3TestExecutionDriver.Include = tag;
-            WhenIExecuteTheTests();
+            _solutionDriver.CompileSolution(BuildTool.MSBuild);
+            _solutionDriver.CheckSolutionShouldHaveCompiled();
+            if (_testRunConfiguration.UnitTestProvider == TestProjectGenerator.UnitTestProvider.xUnit)
+                _vsTestExecution.Filter = $"Category={tag}";
+            else
+                _vsTestExecution.Filter = $"TestCategory={tag}";
+            _vsTestExecution.ExecuteTests();
         }
 
-        [When(@"I execute the tests with (.*)")]
-        public void WhenIExecuteTheTestsWith(string unitTestProvider)
+        [Given(@"MSBuild is used for compiling")]
+        public void GivenMSBuildIsUsedForCompiling()
         {
-            projectSteps.EnsureCompiled();
-
-            switch (unitTestProvider)
-            {
-                case "NUnit.2":
-                    nUnit2TestExecutionDriver.Execute();
-                    break;
-                case "NUnit":
-                    nUnit3TestExecutionDriver.Execute();
-                    break;
-                case "MsTest":
-                    msTestTestExecutionDriver.Execute();
-                    break;
-                case "xUnit":
-                    xUnitTestExecutionDriver.Execute();
-                    break;
-                default:
-                    throw new NotSupportedException();
-            }
+            _solutionDriver.CompileSolution(BuildTool.MSBuild);
         }
+
+        [Given(@"dotnet build is used for compiling")]
+        public void GivenDotnetBuildIsUsedForCompiling()
+        {
+            _solutionDriver.CompileSolution(BuildTool.DotnetBuild);
+        }
+
+        [Given(@"dotnet msbuild is used for compiling")]
+        public void GivenDotnetMsbuildIsUsedForCompiling()
+        {
+            _solutionDriver.CompileSolution(BuildTool.DotnetMSBuild);
+        }
+
+
     }
 }

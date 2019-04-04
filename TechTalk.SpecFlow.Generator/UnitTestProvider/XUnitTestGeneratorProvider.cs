@@ -2,16 +2,17 @@ using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
+using TechTalk.SpecFlow.Generator.CodeDom;
 using TechTalk.SpecFlow.Utils;
 
 namespace TechTalk.SpecFlow.Generator.UnitTestProvider
 {
     public class XUnitTestGeneratorProvider : IUnitTestGeneratorProvider
     {
-        private const string FEATURE_TITLE_PROPERTY_NAME = "FeatureTitle";
+        protected const string FEATURE_TITLE_PROPERTY_NAME = "FeatureTitle";
         private const string DESCRIPTION_PROPERTY_NAME = "Description";
-        private const string FACT_ATTRIBUTE = "Xunit.FactAttribute";
-        private const string FACT_ATTRIBUTE_SKIP_PROPERTY_NAME = "Skip";
+        protected const string FACT_ATTRIBUTE = "Xunit.FactAttribute";
+        protected const string FACT_ATTRIBUTE_SKIP_PROPERTY_NAME = "Skip";
         internal const string THEORY_ATTRIBUTE = "Xunit.Extensions.TheoryAttribute";
         internal const string THEORY_ATTRIBUTE_SKIP_PROPERTY_NAME = "Skip";
         private const string INLINEDATA_ATTRIBUTE = "Xunit.Extensions.InlineDataAttribute";
@@ -42,7 +43,7 @@ namespace TechTalk.SpecFlow.Generator.UnitTestProvider
             // xUnit does not use an attribute for the TestFixture, all public classes are potential fixtures
         }
 
-        public void SetTestClassCategories(TestClassGenerationContext generationContext, IEnumerable<string> featureCategories)
+        public virtual void SetTestClassCategories(TestClassGenerationContext generationContext, IEnumerable<string> featureCategories)
         {
             // Set Category trait which can be used with the /trait or /-trait xunit flags to include/exclude tests
             foreach (string str in featureCategories)
